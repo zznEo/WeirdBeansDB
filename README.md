@@ -1,0 +1,2 @@
+# WeirdBeansDB
+KV NoSQL Demo
