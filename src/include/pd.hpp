@@ -17,7 +17,7 @@
 #include "core.hpp"
 
 #define PD_LOG_STRINGMAX 4096
-#define PD_LOG(level,fmt,...)                                                   \
+#define PD_LOG(level, fmt, ...)                                                 \
     do {                                                                        \
         if (_curPDLevel >= level) {                                             \
             pdLog(level, __func__, __FILE__, __LINE__, fmt, ##__VA_ARGS__);     \

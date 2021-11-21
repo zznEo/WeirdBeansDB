@@ -107,7 +107,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_edb_OBJECTS = edb-edb.$(OBJEXT) edb-command.$(OBJEXT) \
 	edb-commandFactory.$(OBJEXT) edb-bsonobj.$(OBJEXT) \
 	edb-json.$(OBJEXT) edb-oid.$(OBJEXT) edb-base64.$(OBJEXT) \
-	edb-md5.$(OBJEXT) edb-nonce.$(OBJEXT) edb-ossSocket.$(OBJEXT)
+	edb-md5.$(OBJEXT) edb-nonce.$(OBJEXT) edb-ossSocket.$(OBJEXT) \
+	edb-ossPrimitiveFileOp.$(OBJEXT) edb-pd.$(OBJEXT)
 edb_OBJECTS = $(am_edb_OBJECTS)
 edb_DEPENDENCIES =
 edb_LINK = $(CXXLD) $(edb_CXXFLAGS) $(CXXFLAGS) $(edb_LDFLAGS) \
@@ -116,7 +117,8 @@ am_emeralddb_OBJECTS = emeralddb-pmdMain.$(OBJEXT) \
 	emeralddb-pmdTcpListener.$(OBJEXT) emeralddb-bsonobj.$(OBJEXT) \
 	emeralddb-json.$(OBJEXT) emeralddb-oid.$(OBJEXT) \
 	emeralddb-base64.$(OBJEXT) emeralddb-md5.$(OBJEXT) \
-	emeralddb-nonce.$(OBJEXT) emeralddb-ossSocket.$(OBJEXT)
+	emeralddb-nonce.$(OBJEXT) emeralddb-ossSocket.$(OBJEXT) \
+	emeralddb-ossPrimitiveFileOp.$(OBJEXT) emeralddb-pd.$(OBJEXT)
 emeralddb_OBJECTS = $(am_emeralddb_OBJECTS)
 emeralddb_DEPENDENCIES =
 emeralddb_LINK = $(CXXLD) $(emeralddb_CXXFLAGS) $(CXXFLAGS) \
@@ -141,11 +143,14 @@ am__depfiles_remade = ./$(DEPDIR)/edb-base64.Po \
 	./$(DEPDIR)/edb-commandFactory.Po ./$(DEPDIR)/edb-edb.Po \
 	./$(DEPDIR)/edb-json.Po ./$(DEPDIR)/edb-md5.Po \
 	./$(DEPDIR)/edb-nonce.Po ./$(DEPDIR)/edb-oid.Po \
-	./$(DEPDIR)/edb-ossSocket.Po ./$(DEPDIR)/emeralddb-base64.Po \
+	./$(DEPDIR)/edb-ossPrimitiveFileOp.Po \
+	./$(DEPDIR)/edb-ossSocket.Po ./$(DEPDIR)/edb-pd.Po \
+	./$(DEPDIR)/emeralddb-base64.Po \
 	./$(DEPDIR)/emeralddb-bsonobj.Po ./$(DEPDIR)/emeralddb-json.Po \
 	./$(DEPDIR)/emeralddb-md5.Po ./$(DEPDIR)/emeralddb-nonce.Po \
 	./$(DEPDIR)/emeralddb-oid.Po \
-	./$(DEPDIR)/emeralddb-ossSocket.Po \
+	./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po \
+	./$(DEPDIR)/emeralddb-ossSocket.Po ./$(DEPDIR)/emeralddb-pd.Po \
 	./$(DEPDIR)/emeralddb-pmdMain.Po \
 	./$(DEPDIR)/emeralddb-pmdTcpListener.Po
 am__mv = mv -f
@@ -318,13 +323,15 @@ emeralddb_SOURCES = \
     pmd/pmdMain.cpp pmd/pmdTcpListener.cpp \
     bson/src/bsonobj.cpp bson/src/util/json.cpp bson/src/oid.cpp \
     bson/src/lib/base64.cpp bson/src/lib/md5.cpp bson/src/lib/nonce.cpp \
-    oss/ossSocket.cpp
+    oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp \
+    pd/pd.cpp
 
 edb_SOURCES = \
    client/edb.cpp client/command.cpp client/commandFactory.cpp \
     bson/src/bsonobj.cpp bson/src/util/json.cpp bson/src/oid.cpp \
     bson/src/lib/base64.cpp bson/src/lib/md5.cpp bson/src/lib/nonce.cpp \
-    oss/ossSocket.cpp
+    oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp \
+    pd/pd.cpp
 
 emeralddb_CXXFLAGS = -I../boost -Ibson/src -Iinclude -D_FILE_OFFSET_BITS=64 -ggdb -Wall -O0
 emeralddb_LDADD = -lpthread -lm -lboost_system -lboost_thread -lboost_program_options -lrt
@@ -451,14 +458,18 @@ include ./$(DEPDIR)/edb-json.Po # am--include-marker
 include ./$(DEPDIR)/edb-md5.Po # am--include-marker
 include ./$(DEPDIR)/edb-nonce.Po # am--include-marker
 include ./$(DEPDIR)/edb-oid.Po # am--include-marker
+include ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po # am--include-marker
 include ./$(DEPDIR)/edb-ossSocket.Po # am--include-marker
+include ./$(DEPDIR)/edb-pd.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-base64.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-bsonobj.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-json.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-md5.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-nonce.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-oid.Po # am--include-marker
+include ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-ossSocket.Po # am--include-marker
+include ./$(DEPDIR)/emeralddb-pd.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-pmdMain.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-pmdTcpListener.Po # am--include-marker
 
@@ -622,6 +633,34 @@ edb-ossSocket.obj: oss/ossSocket.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-ossSocket.obj `if test -f 'oss/ossSocket.cpp'; then $(CYGPATH_W) 'oss/ossSocket.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossSocket.cpp'; fi`
 
+edb-ossPrimitiveFileOp.o: oss/ossPrimitiveFileOp.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -MT edb-ossPrimitiveFileOp.o -MD -MP -MF $(DEPDIR)/edb-ossPrimitiveFileOp.Tpo -c -o edb-ossPrimitiveFileOp.o `test -f 'oss/ossPrimitiveFileOp.cpp' || echo '$(srcdir)/'`oss/ossPrimitiveFileOp.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/edb-ossPrimitiveFileOp.Tpo $(DEPDIR)/edb-ossPrimitiveFileOp.Po
+#	$(AM_V_CXX)source='oss/ossPrimitiveFileOp.cpp' object='edb-ossPrimitiveFileOp.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-ossPrimitiveFileOp.o `test -f 'oss/ossPrimitiveFileOp.cpp' || echo '$(srcdir)/'`oss/ossPrimitiveFileOp.cpp
+
+edb-ossPrimitiveFileOp.obj: oss/ossPrimitiveFileOp.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -MT edb-ossPrimitiveFileOp.obj -MD -MP -MF $(DEPDIR)/edb-ossPrimitiveFileOp.Tpo -c -o edb-ossPrimitiveFileOp.obj `if test -f 'oss/ossPrimitiveFileOp.cpp'; then $(CYGPATH_W) 'oss/ossPrimitiveFileOp.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossPrimitiveFileOp.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/edb-ossPrimitiveFileOp.Tpo $(DEPDIR)/edb-ossPrimitiveFileOp.Po
+#	$(AM_V_CXX)source='oss/ossPrimitiveFileOp.cpp' object='edb-ossPrimitiveFileOp.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-ossPrimitiveFileOp.obj `if test -f 'oss/ossPrimitiveFileOp.cpp'; then $(CYGPATH_W) 'oss/ossPrimitiveFileOp.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossPrimitiveFileOp.cpp'; fi`
+
+edb-pd.o: pd/pd.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -MT edb-pd.o -MD -MP -MF $(DEPDIR)/edb-pd.Tpo -c -o edb-pd.o `test -f 'pd/pd.cpp' || echo '$(srcdir)/'`pd/pd.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/edb-pd.Tpo $(DEPDIR)/edb-pd.Po
+#	$(AM_V_CXX)source='pd/pd.cpp' object='edb-pd.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-pd.o `test -f 'pd/pd.cpp' || echo '$(srcdir)/'`pd/pd.cpp
+
+edb-pd.obj: pd/pd.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -MT edb-pd.obj -MD -MP -MF $(DEPDIR)/edb-pd.Tpo -c -o edb-pd.obj `if test -f 'pd/pd.cpp'; then $(CYGPATH_W) 'pd/pd.cpp'; else $(CYGPATH_W) '$(srcdir)/pd/pd.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/edb-pd.Tpo $(DEPDIR)/edb-pd.Po
+#	$(AM_V_CXX)source='pd/pd.cpp' object='edb-pd.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-pd.obj `if test -f 'pd/pd.cpp'; then $(CYGPATH_W) 'pd/pd.cpp'; else $(CYGPATH_W) '$(srcdir)/pd/pd.cpp'; fi`
+
 emeralddb-pmdMain.o: pmd/pmdMain.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-pmdMain.o -MD -MP -MF $(DEPDIR)/emeralddb-pmdMain.Tpo -c -o emeralddb-pmdMain.o `test -f 'pmd/pmdMain.cpp' || echo '$(srcdir)/'`pmd/pmdMain.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-pmdMain.Tpo $(DEPDIR)/emeralddb-pmdMain.Po
@@ -747,6 +786,34 @@ emeralddb-ossSocket.obj: oss/ossSocket.cpp
 #	$(AM_V_CXX)source='oss/ossSocket.cpp' object='emeralddb-ossSocket.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ossSocket.obj `if test -f 'oss/ossSocket.cpp'; then $(CYGPATH_W) 'oss/ossSocket.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossSocket.cpp'; fi`
+
+emeralddb-ossPrimitiveFileOp.o: oss/ossPrimitiveFileOp.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-ossPrimitiveFileOp.o -MD -MP -MF $(DEPDIR)/emeralddb-ossPrimitiveFileOp.Tpo -c -o emeralddb-ossPrimitiveFileOp.o `test -f 'oss/ossPrimitiveFileOp.cpp' || echo '$(srcdir)/'`oss/ossPrimitiveFileOp.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-ossPrimitiveFileOp.Tpo $(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
+#	$(AM_V_CXX)source='oss/ossPrimitiveFileOp.cpp' object='emeralddb-ossPrimitiveFileOp.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ossPrimitiveFileOp.o `test -f 'oss/ossPrimitiveFileOp.cpp' || echo '$(srcdir)/'`oss/ossPrimitiveFileOp.cpp
+
+emeralddb-ossPrimitiveFileOp.obj: oss/ossPrimitiveFileOp.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-ossPrimitiveFileOp.obj -MD -MP -MF $(DEPDIR)/emeralddb-ossPrimitiveFileOp.Tpo -c -o emeralddb-ossPrimitiveFileOp.obj `if test -f 'oss/ossPrimitiveFileOp.cpp'; then $(CYGPATH_W) 'oss/ossPrimitiveFileOp.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossPrimitiveFileOp.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-ossPrimitiveFileOp.Tpo $(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
+#	$(AM_V_CXX)source='oss/ossPrimitiveFileOp.cpp' object='emeralddb-ossPrimitiveFileOp.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ossPrimitiveFileOp.obj `if test -f 'oss/ossPrimitiveFileOp.cpp'; then $(CYGPATH_W) 'oss/ossPrimitiveFileOp.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossPrimitiveFileOp.cpp'; fi`
+
+emeralddb-pd.o: pd/pd.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-pd.o -MD -MP -MF $(DEPDIR)/emeralddb-pd.Tpo -c -o emeralddb-pd.o `test -f 'pd/pd.cpp' || echo '$(srcdir)/'`pd/pd.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-pd.Tpo $(DEPDIR)/emeralddb-pd.Po
+#	$(AM_V_CXX)source='pd/pd.cpp' object='emeralddb-pd.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-pd.o `test -f 'pd/pd.cpp' || echo '$(srcdir)/'`pd/pd.cpp
+
+emeralddb-pd.obj: pd/pd.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-pd.obj -MD -MP -MF $(DEPDIR)/emeralddb-pd.Tpo -c -o emeralddb-pd.obj `if test -f 'pd/pd.cpp'; then $(CYGPATH_W) 'pd/pd.cpp'; else $(CYGPATH_W) '$(srcdir)/pd/pd.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-pd.Tpo $(DEPDIR)/emeralddb-pd.Po
+#	$(AM_V_CXX)source='pd/pd.cpp' object='emeralddb-pd.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-pd.obj `if test -f 'pd/pd.cpp'; then $(CYGPATH_W) 'pd/pd.cpp'; else $(CYGPATH_W) '$(srcdir)/pd/pd.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1025,14 +1092,18 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/edb-md5.Po
 	-rm -f ./$(DEPDIR)/edb-nonce.Po
 	-rm -f ./$(DEPDIR)/edb-oid.Po
+	-rm -f ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po
 	-rm -f ./$(DEPDIR)/edb-ossSocket.Po
+	-rm -f ./$(DEPDIR)/edb-pd.Po
 	-rm -f ./$(DEPDIR)/emeralddb-base64.Po
 	-rm -f ./$(DEPDIR)/emeralddb-bsonobj.Po
 	-rm -f ./$(DEPDIR)/emeralddb-json.Po
 	-rm -f ./$(DEPDIR)/emeralddb-md5.Po
 	-rm -f ./$(DEPDIR)/emeralddb-nonce.Po
 	-rm -f ./$(DEPDIR)/emeralddb-oid.Po
+	-rm -f ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossSocket.Po
+	-rm -f ./$(DEPDIR)/emeralddb-pd.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdMain.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdTcpListener.Po
 	-rm -f Makefile
@@ -1091,14 +1162,18 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/edb-md5.Po
 	-rm -f ./$(DEPDIR)/edb-nonce.Po
 	-rm -f ./$(DEPDIR)/edb-oid.Po
+	-rm -f ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po
 	-rm -f ./$(DEPDIR)/edb-ossSocket.Po
+	-rm -f ./$(DEPDIR)/edb-pd.Po
 	-rm -f ./$(DEPDIR)/emeralddb-base64.Po
 	-rm -f ./$(DEPDIR)/emeralddb-bsonobj.Po
 	-rm -f ./$(DEPDIR)/emeralddb-json.Po
 	-rm -f ./$(DEPDIR)/emeralddb-md5.Po
 	-rm -f ./$(DEPDIR)/emeralddb-nonce.Po
 	-rm -f ./$(DEPDIR)/emeralddb-oid.Po
+	-rm -f ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossSocket.Po
+	-rm -f ./$(DEPDIR)/emeralddb-pd.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdMain.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdTcpListener.Po
 	-rm -f Makefile

@@ -52,6 +52,7 @@
 #define oss_rwlock_rdtrylock(__lock)	(pthread_rwlock_tryrdlock( (__lock) ) == 0 )
 #define oss_rwlock_wrtrylock(__lock)	(pthread_rwlock_trywrlock ( ( __lock) ) == 0 )
 
+#endif
 enum OSS_LATCH_MODE {
    SHARED,
    EXCLUSIVE
