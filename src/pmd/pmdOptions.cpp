@@ -24,7 +24,7 @@ pmdOptions::pmdOptions() {
 
 pmdOptions::~pmdOptions() {}
 
-int pmdOptions::readCmd (int argc, char **argv, ::options_description &desc, po::variables_map &vm) {
+int pmdOptions::readCmd (int argc, char **argv, po::options_description &desc, po::variables_map &vm) {
     int rc = EDB_OK;
     try {
         po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm);
@@ -59,21 +59,21 @@ int pmdOptions::importVM(const po::variables_map &vm, bool isDefault) {
         p = vm[PMD_OPTION_CONFPATH].as<string>().c_str();
         strncpy(_confPath, p, OSS_MAX_PATHSIZE);
     } else if (isDefault) {
-        strcpy(_confPath, "./"CONFFILENAME);
+        strcpy(_confPath, "./" CONFFILENAME);
     }
     // log path
     if (vm.count(PMD_OPTION_LOGPATH)) {
         p = vm[PMD_OPTION_LOGPATH].as<string>().c_str();
         strncpy(_logPath, p, OSS_MAX_PATHSIZE);
     } else if (isDefault) {
-        strcpy (_logPath, "./"LOGFILENAME);
+        strcpy (_logPath, "./" LOGFILENAME);
     }
     // db file path
     if (vm.count(PMD_OPTION_DBPATH)) {
         p = vm[PMD_OPTION_DBPATH].as<string>().c_str();
         strncpy(_dbPath, p, OSS_MAX_PATHSIZE);
     } else if (isDefault) {
-        strcpy(_dbPath, "./"DBFILENAME);
+        strcpy(_dbPath, "./" DBFILENAME);
     }
     // svcname
     if (vm.count(PMD_OPTION_SVCNAME)) {
@@ -125,7 +125,7 @@ error:
    goto done;
 }
 
-int pmdOptions::init (int argc, char **argv) {
+int pmdOptions::init(int argc, char **argv) {
     int rc = EDB_OK;
     po::options_description all ("Command options");
     po::variables_map vm;
@@ -134,7 +134,7 @@ int pmdOptions::init (int argc, char **argv) {
     PMD_ADD_PARAM_OPTIONS_BEGIN(all)
     PMD_COMMANDS_OPTIONS
     PMD_ADD_PARAM_OPTIONS_END
-    rc = readCmd (argc, argv, all, vm);
+    rc = readCmd(argc, argv, all, vm);
     if (rc) {
         PD_LOG (PDERROR, "Failed to read cmd, rc = %d", rc);
         goto error;
@@ -147,20 +147,20 @@ int pmdOptions::init (int argc, char **argv) {
     }
     // check if there's conf path
     if (vm.count (PMD_OPTION_CONFPATH)) {
-        rc = readConfigureFile (vm[PMD_OPTION_CONFPATH].as<string>().c_str(), all, vm2);
+        rc = readConfigureFile(vm[PMD_OPTION_CONFPATH].as<string>().c_str(), all, vm2);
     }
     if (rc) {
         PD_LOG (PDERROR, "Unexpected error when reading conf file, rc = %d", rc);
         goto error;
     }
     // load vm from file
-    rc = importVM (vm2);
+    rc = importVM(vm2);
     if (rc) {
         PD_LOG (PDERROR, "Failed to import from vm2, rc = %d", rc);
         goto error;
     }
     // load vm from command line
-    rc = importVM (vm);
+    rc = importVM(vm);
     if (rc) {
         PD_LOG (PDERROR, "Failed to import from vm, rc = %d", rc);
         goto error;

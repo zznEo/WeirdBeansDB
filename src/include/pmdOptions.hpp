@@ -31,7 +31,7 @@ namespace po = boost::program_options;
 #define PMD_ADD_PARAM_OPTIONS_BEGIN( desc )\
         desc.add_options()
 
-#define PMD_ADD_PARAM_OPTIONS_END;
+#define PMD_ADD_PARAM_OPTIONS_END ;
 
 #define PMD_COMMANDS_STRING(a,b) (string(a) + string(b)).c_str()
 
