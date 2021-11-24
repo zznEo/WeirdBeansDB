@@ -15,10 +15,10 @@
 #include "pd.hpp"
 
 pmdOptions::pmdOptions() {
-    memset (_dbPath, 0, sizeof(_dbPath));
-    memset (_logPath, 0, sizeof(_logPath));
-    memset (_confPath, 0, sizeof(_confPath));
-    memset (_svcName, 0, sizeof(_svcName));
+    memset(_dbPath, 0, sizeof(_dbPath));
+    memset(_logPath, 0, sizeof(_logPath));
+    memset(_confPath, 0, sizeof(_confPath));
+    memset(_svcName, 0, sizeof(_svcName));
     _maxPool = NUMPOOL;
 }
 
