@@ -20,7 +20,7 @@
 #include "core.hpp"
 
 template<typename Data>
-class ossQueus {
+class ossQueue {
 private:
     std::queue<Data> _queue;
     boost::mutex _mutex;
@@ -38,7 +38,7 @@ public:
         _cond.notify_one();
     }
 
-    bool empty() const {
+    bool empty()const {
         boost::mutex::scoped_lock lock(mutex);
         return _queue.empty();
     }
