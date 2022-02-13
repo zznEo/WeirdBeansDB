@@ -76,10 +76,10 @@ public:
         return _maxPool;
     }
 private:
-    char _dbPath [OSS_MAX_PATHSIZE + 1];
-    char _logPath [OSS_MAX_PATHSIZE + 1];
-    char _confPath [OSS_MAX_PATHSIZE + 1];
-    char _svcName [NI_MAXSERV + 1];
+    char _dbPath[OSS_MAX_PATHSIZE + 1];
+    char _logPath[OSS_MAX_PATHSIZE + 1];
+    char _confPath[OSS_MAX_PATHSIZE + 1];
+    char _svcName[NI_MAXSERV + 1];
     int  _maxPool;
 };
 #endif

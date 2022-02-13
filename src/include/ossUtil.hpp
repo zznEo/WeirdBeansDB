@@ -11,19 +11,38 @@
    along with this program. If not, see <http://www.gnu.org/license/>.
 *******************************************************************************/
 
-#include "pmd.hpp"
-#include "pmdOptions.hpp"
-#include "pd.hpp"
+#ifndef OSSUTIL_HPP__
+#define OSSUTIL_HPP__
 
-EDB_KRCB pmd_krcb;
-extern char _pdDiagLogPath[OSS_MAX_PATHSIZE + 1];
-int EDB_KRCB::init (pmdOptions *options) {
-   setDBStatus(EDB_DB_NORMAL);
-   setDataFilePath(options->getDBPath());
-   setLogFilePath(options->getLogPath());
-   strncpy(_pdDiagLogPath, getLogFilePath(), sizeof(_pdDiagLogPath));
-   setSvcName(options->getServiceName());
-   setMaxPool(options->getMaxPool());
-   //return _rtnMgr.rtnInitialize();
-   return EDB_OK;
+#include "core.hpp"
+#include <boost/thread/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread/xtime.hpp>
+
+inline void ossSleepmicros(unsigned int s) {
+    struct timespec t;
+    t.tv_sec = (time_t)(s / 1000000);
+    t.tv_nsec = 1000 * (s % 1000000);
+    while(nanosleep(&t, &t) == -1 && errno == ETNTR);
 }
+
+inline void ossSleepmillis(unsigned int s) {
+   ossSleepmicros (s * 1000);
+}
+
+typedef pid_t     OSSPID;
+typedef pthread_t OSSTID;
+
+inline OSSPID ossGetParentProcessID() {
+    return getppid();
+}
+
+inline OSSPID ossGetCurrentProcessID() {
+    return getpid();
+}
+
+inline OSSTID ossGetCurrentThreadID() {
+    return syscall(SYS_gettid);
+}
+
+#endif

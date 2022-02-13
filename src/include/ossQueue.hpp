@@ -27,32 +27,32 @@ private:
     boost::condition_variable _cond;
 public:
     unsigned int size() {
-        boost::mutex::scoped_lock lock(mutex);
+        boost::mutex::scoped_lock lock(_mutex);
         return (unsigned int)_queue.size();
     }
 
     void push(Data const &data) {
-        boost::mutex::scoped_lock lock(mutex);
+        boost::mutex::scoped_lock lock(_mutex);
         _queue.push(data);
         lock.unlock();
         _cond.notify_one();
     }
 
     bool empty()const {
-        boost::mutex::scoped_lock lock(mutex);
+        boost::mutex::scoped_lock lock(_mutex);
         return _queue.empty();
     }
 
     bool try_pop(Data &value) {
-        boost::mutex::scoped_lock lock(mutex);
+        boost::mutex::scoped_lock lock(_mutex);
         if (_queue.empty()) return false;
-        val = _queue.front();
+        value = _queue.front();
         _queue.pop();
         return true;
     }
 
     void wait_and_pop(Data &value) {
-        boost::mutex::scoped_lock lock(mutex);
+        boost::mutex::scoped_lock lock(_mutex);
         while(_queue.empty()) {
             _cond.wait(lock);
         }
@@ -60,9 +60,9 @@ public:
         _queue.pop();
     }
 
-    bool time_wait_and_pop(Data &value, long long millsec) {
+    bool timed_wait_and_pop(Data &value, long long millsec) {
         boost::system_time const timeout = boost::get_system_time () + boost::posix_time::milliseconds(millsec);
-        boost::mutex::scoped_lock lock(mutex);
+        boost::mutex::scoped_lock lock(_mutex);
         // if timed_wait return false, that means we failed by timeout
         while(_queue.empty()) {
             if (!_cond.timed_wait(lock, timeout)) return false;

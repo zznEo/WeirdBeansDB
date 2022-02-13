@@ -12,11 +12,12 @@
 *******************************************************************************/
 #include "core.hpp"
 #include "ossSocket.hpp"
+#include "pmdEDU.hpp"
 
 #define PMD_TCPLISTENER_RETRY 5
 #define OSS_MAX_SERVICENAME NI_MAXSERV
 
-int pmdTcpListenerEntryPoint() {
+int pmdTcpListenerEntryPoint(pmdEDUCB *cb, void *arg) {
     int rc = EDB_OK;
     int port = 9999;
     ossSocket sock(port);
