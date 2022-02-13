@@ -66,7 +66,7 @@ struct _eduEntryInfo {
 pmdEntryPoint getEntryFuncByType(EDU_TYPES type) {
    pmdEntryPoint rt = NULL;
    static const _eduEntryInfo entry[] = {
-      ON_EDUTYPE_TO_ENTRY1(EDU_TYPE_AGENT, false, pmdAgentEntryPoint, "Agent"),
+      //ON_EDUTYPE_TO_ENTRY1(EDU_TYPE_AGENT, false, pmdAgentEntryPoint, "Agent"),
       ON_EDUTYPE_TO_ENTRY1 (EDU_TYPE_TCPLISTENER, true, pmdTcpListenerEntryPoint, "TCPListener"),
       ON_EDUTYPE_TO_ENTRY1 (EDU_TYPE_MAXIMUM, false, NULL, "Unknown")
    };
@@ -180,6 +180,6 @@ int pmdEDUEntryPoint(EDU_TYPES type, pmdEDUCB *cb, void *arg) {
          }
          PD_LOG(PDDEBUG, "Terminating thread for EDU: %lld, type %s", myEDUID, getEDUName(type));
       }
-      return 0;
    }
+   return 0;
 }
