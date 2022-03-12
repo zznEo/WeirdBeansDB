@@ -108,7 +108,8 @@ am_edb_OBJECTS = edb-edb.$(OBJEXT) edb-command.$(OBJEXT) \
 	edb-commandFactory.$(OBJEXT) edb-bsonobj.$(OBJEXT) \
 	edb-json.$(OBJEXT) edb-oid.$(OBJEXT) edb-base64.$(OBJEXT) \
 	edb-md5.$(OBJEXT) edb-nonce.$(OBJEXT) edb-ossSocket.$(OBJEXT) \
-	edb-ossPrimitiveFileOp.$(OBJEXT) edb-pd.$(OBJEXT)
+	edb-ossPrimitiveFileOp.$(OBJEXT) edb-pd.$(OBJEXT) \
+	edb-msg.$(OBJEXT)
 edb_OBJECTS = $(am_edb_OBJECTS)
 edb_DEPENDENCIES =
 edb_LINK = $(CXXLD) $(edb_CXXFLAGS) $(CXXFLAGS) $(edb_LDFLAGS) \
@@ -121,7 +122,8 @@ am_emeralddb_OBJECTS = emeralddb-pmdMain.$(OBJEXT) \
 	emeralddb-json.$(OBJEXT) emeralddb-oid.$(OBJEXT) \
 	emeralddb-base64.$(OBJEXT) emeralddb-md5.$(OBJEXT) \
 	emeralddb-nonce.$(OBJEXT) emeralddb-ossSocket.$(OBJEXT) \
-	emeralddb-ossPrimitiveFileOp.$(OBJEXT) emeralddb-pd.$(OBJEXT)
+	emeralddb-ossPrimitiveFileOp.$(OBJEXT) emeralddb-pd.$(OBJEXT) \
+	emeralddb-msg.$(OBJEXT)
 emeralddb_OBJECTS = $(am_emeralddb_OBJECTS)
 emeralddb_DEPENDENCIES =
 emeralddb_LINK = $(CXXLD) $(emeralddb_CXXFLAGS) $(CXXFLAGS) \
@@ -145,13 +147,13 @@ am__depfiles_remade = ./$(DEPDIR)/edb-base64.Po \
 	./$(DEPDIR)/edb-bsonobj.Po ./$(DEPDIR)/edb-command.Po \
 	./$(DEPDIR)/edb-commandFactory.Po ./$(DEPDIR)/edb-edb.Po \
 	./$(DEPDIR)/edb-json.Po ./$(DEPDIR)/edb-md5.Po \
-	./$(DEPDIR)/edb-nonce.Po ./$(DEPDIR)/edb-oid.Po \
-	./$(DEPDIR)/edb-ossPrimitiveFileOp.Po \
+	./$(DEPDIR)/edb-msg.Po ./$(DEPDIR)/edb-nonce.Po \
+	./$(DEPDIR)/edb-oid.Po ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po \
 	./$(DEPDIR)/edb-ossSocket.Po ./$(DEPDIR)/edb-pd.Po \
 	./$(DEPDIR)/emeralddb-base64.Po \
 	./$(DEPDIR)/emeralddb-bsonobj.Po ./$(DEPDIR)/emeralddb-json.Po \
-	./$(DEPDIR)/emeralddb-md5.Po ./$(DEPDIR)/emeralddb-nonce.Po \
-	./$(DEPDIR)/emeralddb-oid.Po \
+	./$(DEPDIR)/emeralddb-md5.Po ./$(DEPDIR)/emeralddb-msg.Po \
+	./$(DEPDIR)/emeralddb-nonce.Po ./$(DEPDIR)/emeralddb-oid.Po \
 	./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po \
 	./$(DEPDIR)/emeralddb-ossSocket.Po ./$(DEPDIR)/emeralddb-pd.Po \
 	./$(DEPDIR)/emeralddb-pmd.Po ./$(DEPDIR)/emeralddb-pmdAgent.Po \
@@ -332,14 +334,14 @@ emeralddb_SOURCES = \
     bson/src/bsonobj.cpp bson/src/util/json.cpp bson/src/oid.cpp \
     bson/src/lib/base64.cpp bson/src/lib/md5.cpp bson/src/lib/nonce.cpp \
     oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp \
-    pd/pd.cpp
+    pd/pd.cpp msg/msg.cpp
 
 edb_SOURCES = \
     client/edb.cpp client/command.cpp client/commandFactory.cpp \
     bson/src/bsonobj.cpp bson/src/util/json.cpp bson/src/oid.cpp \
     bson/src/lib/base64.cpp bson/src/lib/md5.cpp bson/src/lib/nonce.cpp \
     oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp \
-    pd/pd.cpp
+    pd/pd.cpp msg/msg.cpp
 
 emeralddb_CXXFLAGS = -I../boost -Ibson/src -Iinclude -D_FILE_OFFSET_BITS=64 -ggdb -Wall -O0
 emeralddb_LDADD = -lpthread -lm -lboost_system -lboost_thread -lboost_program_options -lrt
@@ -464,6 +466,7 @@ include ./$(DEPDIR)/edb-commandFactory.Po # am--include-marker
 include ./$(DEPDIR)/edb-edb.Po # am--include-marker
 include ./$(DEPDIR)/edb-json.Po # am--include-marker
 include ./$(DEPDIR)/edb-md5.Po # am--include-marker
+include ./$(DEPDIR)/edb-msg.Po # am--include-marker
 include ./$(DEPDIR)/edb-nonce.Po # am--include-marker
 include ./$(DEPDIR)/edb-oid.Po # am--include-marker
 include ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po # am--include-marker
@@ -473,6 +476,7 @@ include ./$(DEPDIR)/emeralddb-base64.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-bsonobj.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-json.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-md5.Po # am--include-marker
+include ./$(DEPDIR)/emeralddb-msg.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-nonce.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-oid.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po # am--include-marker
@@ -673,6 +677,20 @@ edb-pd.obj: pd/pd.cpp
 #	$(AM_V_CXX)source='pd/pd.cpp' object='edb-pd.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-pd.obj `if test -f 'pd/pd.cpp'; then $(CYGPATH_W) 'pd/pd.cpp'; else $(CYGPATH_W) '$(srcdir)/pd/pd.cpp'; fi`
+
+edb-msg.o: msg/msg.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -MT edb-msg.o -MD -MP -MF $(DEPDIR)/edb-msg.Tpo -c -o edb-msg.o `test -f 'msg/msg.cpp' || echo '$(srcdir)/'`msg/msg.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/edb-msg.Tpo $(DEPDIR)/edb-msg.Po
+#	$(AM_V_CXX)source='msg/msg.cpp' object='edb-msg.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-msg.o `test -f 'msg/msg.cpp' || echo '$(srcdir)/'`msg/msg.cpp
+
+edb-msg.obj: msg/msg.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -MT edb-msg.obj -MD -MP -MF $(DEPDIR)/edb-msg.Tpo -c -o edb-msg.obj `if test -f 'msg/msg.cpp'; then $(CYGPATH_W) 'msg/msg.cpp'; else $(CYGPATH_W) '$(srcdir)/msg/msg.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/edb-msg.Tpo $(DEPDIR)/edb-msg.Po
+#	$(AM_V_CXX)source='msg/msg.cpp' object='edb-msg.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edb_CXXFLAGS) $(CXXFLAGS) -c -o edb-msg.obj `if test -f 'msg/msg.cpp'; then $(CYGPATH_W) 'msg/msg.cpp'; else $(CYGPATH_W) '$(srcdir)/msg/msg.cpp'; fi`
 
 emeralddb-pmdMain.o: pmd/pmdMain.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-pmdMain.o -MD -MP -MF $(DEPDIR)/emeralddb-pmdMain.Tpo -c -o emeralddb-pmdMain.o `test -f 'pmd/pmdMain.cpp' || echo '$(srcdir)/'`pmd/pmdMain.cpp
@@ -897,6 +915,20 @@ emeralddb-pd.obj: pd/pd.cpp
 #	$(AM_V_CXX)source='pd/pd.cpp' object='emeralddb-pd.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-pd.obj `if test -f 'pd/pd.cpp'; then $(CYGPATH_W) 'pd/pd.cpp'; else $(CYGPATH_W) '$(srcdir)/pd/pd.cpp'; fi`
+
+emeralddb-msg.o: msg/msg.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-msg.o -MD -MP -MF $(DEPDIR)/emeralddb-msg.Tpo -c -o emeralddb-msg.o `test -f 'msg/msg.cpp' || echo '$(srcdir)/'`msg/msg.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-msg.Tpo $(DEPDIR)/emeralddb-msg.Po
+#	$(AM_V_CXX)source='msg/msg.cpp' object='emeralddb-msg.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-msg.o `test -f 'msg/msg.cpp' || echo '$(srcdir)/'`msg/msg.cpp
+
+emeralddb-msg.obj: msg/msg.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-msg.obj -MD -MP -MF $(DEPDIR)/emeralddb-msg.Tpo -c -o emeralddb-msg.obj `if test -f 'msg/msg.cpp'; then $(CYGPATH_W) 'msg/msg.cpp'; else $(CYGPATH_W) '$(srcdir)/msg/msg.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-msg.Tpo $(DEPDIR)/emeralddb-msg.Po
+#	$(AM_V_CXX)source='msg/msg.cpp' object='emeralddb-msg.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-msg.obj `if test -f 'msg/msg.cpp'; then $(CYGPATH_W) 'msg/msg.cpp'; else $(CYGPATH_W) '$(srcdir)/msg/msg.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1173,6 +1205,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/edb-edb.Po
 	-rm -f ./$(DEPDIR)/edb-json.Po
 	-rm -f ./$(DEPDIR)/edb-md5.Po
+	-rm -f ./$(DEPDIR)/edb-msg.Po
 	-rm -f ./$(DEPDIR)/edb-nonce.Po
 	-rm -f ./$(DEPDIR)/edb-oid.Po
 	-rm -f ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po
@@ -1182,6 +1215,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/emeralddb-bsonobj.Po
 	-rm -f ./$(DEPDIR)/emeralddb-json.Po
 	-rm -f ./$(DEPDIR)/emeralddb-md5.Po
+	-rm -f ./$(DEPDIR)/emeralddb-msg.Po
 	-rm -f ./$(DEPDIR)/emeralddb-nonce.Po
 	-rm -f ./$(DEPDIR)/emeralddb-oid.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
@@ -1248,6 +1282,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/edb-edb.Po
 	-rm -f ./$(DEPDIR)/edb-json.Po
 	-rm -f ./$(DEPDIR)/edb-md5.Po
+	-rm -f ./$(DEPDIR)/edb-msg.Po
 	-rm -f ./$(DEPDIR)/edb-nonce.Po
 	-rm -f ./$(DEPDIR)/edb-oid.Po
 	-rm -f ./$(DEPDIR)/edb-ossPrimitiveFileOp.Po
@@ -1257,6 +1292,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/emeralddb-bsonobj.Po
 	-rm -f ./$(DEPDIR)/emeralddb-json.Po
 	-rm -f ./$(DEPDIR)/emeralddb-md5.Po
+	-rm -f ./$(DEPDIR)/emeralddb-msg.Po
 	-rm -f ./$(DEPDIR)/emeralddb-nonce.Po
 	-rm -f ./$(DEPDIR)/emeralddb-oid.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po

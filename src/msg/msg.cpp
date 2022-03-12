@@ -237,7 +237,7 @@ int msgBuildQuery (char **ppBuffer, int *pBufferSize, BSONObj &key) {
     int rc             = EDB_OK;
     int size           = sizeof(MsgQuery) + key.objsize();
     MsgQuery *pQuery   = NULL;
-    rc = msgCheckBuffer (ppBuffer, pBufferSize, size ;
+    rc = msgCheckBuffer (ppBuffer, pBufferSize, size);
     if (rc) {
         PD_LOG ( PDERROR, "Failed to realloc buffer for %d bytes, rc = %d", size, rc );
         goto error;

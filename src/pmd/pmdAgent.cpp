@@ -17,6 +17,7 @@
 #include "ossSocket.hpp"
 #include "../bson/src/bson.h"
 #include "pmd.hpp"
+#include "msg.hpp"
 using namespace bson;
 using namespace std;
 
@@ -27,46 +28,157 @@ using namespace std;
 static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **ppResultBuffer, int *pResultBufferSize, bool *disconnect, pmdEDUCB *cb) {
     EDB_ASSERT(disconnect, "disconnect can't be NULL");
     EDB_ASSERT(pReceiveBuffer, "pReceivedBuffer is NULL");
-    PD_LOG(PDEVENT, "Process Agent Request");
     int rc = EDB_OK;
     unsigned int probe = 0;
-    **(int**)(ppResultBuffer) = 4;
-    *pResultBufferSize = 4;
+    const char *pInsertorBuffer = NULL;
+    BSONObj recordID;
+    BSONObj retObj;
+
+    // extract message
+    MsgHeader *header = (MsgHeader *)pReceiveBuffer;
+    int messageLength = header->messageLen;
+    int opCode = header->opCode;
+    EDB_KRCB *krcb = pmdGetKRCB();
+    // get rtn
+    //rtn *rtnMgr = krcb->getRtnMgr();
+    *disconnect = false;
+
+    // check if the package length is valid
+    if (messageLength < (int)sizeof(MsgHeader)) {
+        probe = 10;
+        rc = EDB_INVALIDARG;
+        goto error;
+    }
+    try {
+        if (opCode == OP_INSERT) {
+            int recordNum = 0;
+            PD_LOG(PDERROR, "Insert request received");
+            rc = msgExtractInsert(pReceiveBuffer, recordNum, &pInsertorBuffer);
+            if (rc) {
+                PD_LOG (PDERROR, "Failed to read insert packet");
+                probe = 20;
+                rc = EDB_INVALIDARG;
+                goto error;
+            }
+            try {
+                BSONObj insertor(pInsertorBuffer);
+                PD_LOG(PDEVENT, "Insert: insertor: %s", insertor.toString().c_str());
+                // // make sure _id is included
+                // BSONObjIterator it(insertor);
+                // BSONElement ele = *it;
+                // const char *tmp = ele.fieldName();
+                // rc = strcmp(tmp, gKeyFieldName);
+                // if (rc) {
+                //     PD_LOG (PDERROR, "First element in inserted record is not _id");
+                //     probe = 25;
+                //     rc = EDB_NO_ID;
+                //     goto error;
+                // }
+                // // insert record
+                // rc = rtnMgr->rtnInsert(insertor);
+            } catch (std::exception &e) {
+                PD_LOG(PDERROR, "Failed to create insertor for insert: %s", e.what());
+                probe = 30;
+                rc = EDB_INVALIDARG;
+                goto error;
+            }
+        } else if (opCode == OP_QUERY) {
+            PD_LOG (PDDEBUG, "Query request received");
+            rc = msgExtractQuery (pReceiveBuffer, recordID);
+            if (rc) {
+                PD_LOG (PDERROR, "Failed to read query packet");
+                probe = 40;
+                rc = EDB_INVALIDARG;
+                goto error;
+            }
+            PD_LOG (PDEVENT, "Query condition: %s", recordID.toString().c_str());
+            try {
+                BSONObjBuilder b;
+                b.append ("query", "test");
+                b.append ("result", 10);
+                retObj = b.obj ();
+            } catch (std::exception &e) {
+                PD_LOG (PDERROR, "Failed to create return BSONObj: %s", e.what() );
+                probe = 55;
+                rc = EDB_INVALIDARG;
+                goto error;
+            }
+            //rc = rtnMgr->rtnFind (recordID, retObj);
+        } else if (opCode == OP_DELETE) {
+            PD_LOG (PDDEBUG, "Delete request received" );
+            rc = msgExtractDelete (pReceiveBuffer, recordID);
+            if (rc) {
+                PD_LOG ( PDERROR, "Failed to read delete packet" );
+                probe = 50;
+                rc = EDB_INVALIDARG;
+                goto error;
+            }
+            PD_LOG (PDEVENT, "Delete condition: %s", recordID.toString().c_str() );
+            //rc = rtnMgr->rtnRemove ( recordID );
+        } else if (opCode == OP_SNAPSHOT) {
+            PD_LOG (PDDEBUG, "Snapshot request received");
+            try {
+                BSONObjBuilder b;
+                b.append ("insertTimes", 100);
+                b.append ("delTimes", 1000);
+                b.append ("queryTimes", 2000);
+                b.append ("serverRunTime", 100);
+                retObj = b.obj();
+            } catch (std::exception &e) {
+                PD_LOG (PDERROR, "Failed to create return BSONObj: %s", e.what() );
+                probe = 55;
+                rc = EDB_INVALIDARG;
+                goto error;
+            }
+        } else if (opCode == OP_COMMAND) {
+
+        } else if (opCode == OP_DISCONNECT) {
+            PD_LOG (PDEVENT, "Receive disconnect msg");
+            *disconnect = true;
+        } else {
+            probe = 60;
+            rc = EDB_INVALIDARG;
+            goto error;
+        }
+    } catch (std::exception &e) {
+        PD_LOG (PDERROR, "Error happened during performing operation: %s", e.what());
+        probe = 70;
+        rc = EDB_INVALIDARG;
+        goto error;
+    }
+    if (rc) {
+      PD_LOG (PDERROR, "Failed to perform operation, rc = %d", rc);
+      goto error;
+    }
+
+done:
+   // build reply
+    if (!*disconnect) {
+        switch (opCode) {
+        case OP_SNAPSHOT:
+        case OP_QUERY:
+            msgBuildReply(ppResultBuffer, pResultBufferSize, rc, &retObj);
+            break;
+        default:
+            msgBuildReply(ppResultBuffer, pResultBufferSize, rc, NULL);
+            break;
+        }
+    }
     return rc;
-    // const char *pInsertorBuffer = NULL;
-    // BSONObj recordID;
-    // BSONObj retObj;
-
-    // // extract message
-    // MsgHeader *header = (MsgHeader *)pReceiveBuffer;
-    // int messageLength = header->messageLen;
-    // int opCode = header->opCode;
-    // EDB_KRCB *krcb = pmdGetKRCB();
-    // // get rtn
-    // rtn *rtnMgr = krcb->getRtnMgr();
-    // *disconnect = false;
-
-    // // check if the package length is valid
-    // if (messageLength < (int)sizeof(MsgHeader)) {
-    //     probe = 10;
-    //     rc = EDB_INVALIDARG;
-    //     goto error;
-    // }
-    // try {
-    //     if (opCode == OP_INSERT) {
-    //         int recordNum = 0;
-    //         PD_LOG(PDERROR, "Insert request received");
-    //         rc = msgExtraInstet(pReceiveBuffer, recordNum, &pInsertorBuffer);
-    //         if (rc) {
-    //             PD_LOG(PDEVENT, "Insert: insertor: %s", )
-    //         }
-    //     }
-    // }
+error :
+   switch (rc) {
+    case EDB_INVALIDARG:
+        PD_LOG(PDERROR, "Invalid argument is received, probe: %d", probe );
+        break;
+    case EDB_IXM_ID_NOT_EXIST:
+        PD_LOG(PDERROR, "Record does not exist");
+        break;
+    default:
+        PD_LOG(PDERROR, "System error, probe: %d, rc = %d", probe, rc);
+        break;
+   }
+   goto done;
 }
-
-struct MsgReply {
-    int a;
-};
 
 int pmdAgentEntryPoint(pmdEDUCB *cb, void *arg) {
     int rc = EDB_OK;
