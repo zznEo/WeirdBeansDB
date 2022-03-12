@@ -14,8 +14,10 @@
 #include "core.hpp"
 #include "command.hpp"
 #include "commandFactory.hpp"
+#include "pd.hpp"
 
 COMMAND_BEGIN
+COMMAND_ADD(COMMAND_INSERT,InsertCommand)
 COMMAND_ADD(COMMAND_CONNECT,ConnectCommand)
 COMMAND_ADD(COMMAND_QUIT, QuitCommand)
 COMMAND_ADD(COMMAND_HELP, HelpCommand)
@@ -99,7 +101,7 @@ int ICommand::getError(int code) {
     return code;
 }
 
-int ICommand::recvReply( ossSocket & sock ) {
+int ICommand::recvReply(ossSocket & sock) {
     // define message data length.
     int length = 0;
     int ret = EDB_OK;
@@ -111,9 +113,9 @@ int ICommand::recvReply( ossSocket & sock ) {
     while (true) {
         // receive data from the server.first receive the length of the data.
         ret = sock.recv(_recvBuf, sizeof(int));
-        if (EDB_TIMEOUT == ret) {
+        if (ret == EDB_TIMEOUT) {
             continue;
-        } else if (EDB_NETWORK_CLOSE == ret) {
+        } else if (ret == EDB_NETWORK_CLOSE) {
             return getError(EDB_SOCK_REMOTE_CLOSED);
         } else {
             break;
@@ -131,7 +133,7 @@ int ICommand::recvReply( ossSocket & sock ) {
         ret = sock.recv(&_recvBuf[sizeof(int)], length-sizeof(int));
         if (ret == EDB_TIMEOUT) {
             continue;
-        } else if (EDB_NETWORK_CLOSE == ret) {
+        } else if (ret == EDB_NETWORK_CLOSE) {
             return getError(EDB_SOCK_REMOTE_CLOSED);
         } else {
             break;
@@ -177,6 +179,38 @@ int ICommand::sendOrder(ossSocket &sock, int opCode) {
    return ret;
 }
 
+/******************************InsertCommand**********************************************/
+int InsertCommand::handleReply() {
+//    MsgReply *msg = (MsgReply*)_recvBuf;
+//    int returnCode = msg->returnCode;
+//    int ret = getError(returnCode);
+//    return ret;
+    return EDB_OK;
+}
+
+int InsertCommand::execute(ossSocket & sock, std::vector<std::string> & argVec) {
+    int rc = EDB_OK;
+    if (argVec.size() < 1) {
+        return getError(EDB_INSERT_INVALID_ARGUMENT);
+    }
+    _jsonString = argVec[0];
+    if(!sock.isConnected()) {
+        return getError(EDB_SOCK_NOT_CONNECT);
+    }
+
+    rc = sendOrder(sock, 0);
+    PD_RC_CHECK(rc, PDERROR, "Failed to send order, rc = %d", rc);
+
+    rc = recvReply(sock);
+    PD_RC_CHECK(rc, PDERROR, "Failed to receive reply, rc = %d", rc);
+    rc = handleReply();
+    PD_RC_CHECK(rc, PDERROR, "Failed to receive reply, rc = %d", rc);
+done:
+    return rc;
+error:
+    goto done;
+}
+
 /******************************ConnectCommand****************************************/
 int ConnectCommand::execute(ossSocket &sock, std::vector<std::string> &argVec) {
     int ret = EDB_OK;
@@ -203,7 +237,7 @@ int ConnectCommand::execute(ossSocket &sock, std::vector<std::string> &argVec) {
 /******************************QuitCommand**********************************************/
 int QuitCommand::handleReply() {
    int ret = EDB_OK;
-   //gQuit = 1;
+   gQuit = 1;
    return ret;
 }
 
@@ -213,7 +247,7 @@ int QuitCommand::execute(ossSocket &sock, std::vector<std::string> &argVec) {
        return getError(EDB_SOCK_NOT_CONNECT);
     }
     ret = sendOrder(sock, 0);
-    //sock.close();
+    sock.close();
     ret = handleReply();
     return ret;
 }

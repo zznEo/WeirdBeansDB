@@ -24,6 +24,8 @@
 #define OSS_MAX_HOSTNAME NI_MAXHOST
 #define OSS_MAX_SERVICENAME NI_MAXSERV
 
+typedef int SOCKET;
+
 class _ossSocket {
 private:
     int _fd;

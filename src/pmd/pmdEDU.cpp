@@ -66,7 +66,7 @@ struct _eduEntryInfo {
 pmdEntryPoint getEntryFuncByType(EDU_TYPES type) {
    pmdEntryPoint rt = NULL;
    static const _eduEntryInfo entry[] = {
-      //ON_EDUTYPE_TO_ENTRY1(EDU_TYPE_AGENT, false, pmdAgentEntryPoint, "Agent"),
+      ON_EDUTYPE_TO_ENTRY1(EDU_TYPE_AGENT, false, pmdAgentEntryPoint, "Agent"),
       ON_EDUTYPE_TO_ENTRY1 (EDU_TYPE_TCPLISTENER, true, pmdTcpListenerEntryPoint, "TCPListener"),
       ON_EDUTYPE_TO_ENTRY1 (EDU_TYPE_MAXIMUM, false, NULL, "Unknown")
    };
@@ -127,7 +127,7 @@ int pmdEDUEntryPoint(EDU_TYPES type, pmdEDUCB *cb, void *arg) {
    bool eduDestroyed = false;
    bool isForced = false;
 
-   // main loop;
+   // main loop
    while (!eduDestroyed) {
       type = cb->getType();
       // wait for 1000 milliseconds for event
@@ -141,7 +141,7 @@ int pmdEDUEntryPoint(EDU_TYPES type, pmdEDUCB *cb, void *arg) {
       }
       if (!isForced && event._eventType == PMD_EDU_EVENT_RESUME) {
          // set EDU status to wait
-         //eduMgr->waitEDU(myEDUID);
+         eduMgr->waitEDU(myEDUID);
          // run the main function
          pmdEntryPoint entryFunc = getEntryFuncByType(type);
          if (!entryFunc) {
@@ -160,26 +160,26 @@ int pmdEDUEntryPoint(EDU_TYPES type, pmdEDUCB *cb, void *arg) {
             } else if (rc) {
                PD_LOG(PDWARNING, "EDU %lld, type %s, exits with %d", myEDUID, getEDUName(type), rc);
             }
-            //eduMgr->waitEDU(myEDUID);
-         } else if (!isForced && event._eventType != PMD_EDU_EVENT_TERM) {
-            PD_LOG(PDERROR, "Receive the wrong event %d in EDU %lld, type %s", event._eventType, myEDUID, getEDUName(type));
-            rc = EDB_SYS;
-         } else if (isForced && event._eventType == PMD_EDU_EVENT_TERM && cb->isForced()) {
-             PD_LOG(PDEVENT, "EDU %lld, type %s is forced", myEDUID, type);
-            isForced = true;
          }
-         // felease the event data
-         if (!isForced && event._Data && event._relase) {
-            free(event._Data);
-            event.reset();
-         }
-
-         //rc = eduMgr->returnEDU(myEDUID, isForced, &eduDestroyed);
-         if (rc) {
-             PD_LOG(PDERROR, "Invalid EDU Status for EDU: %lld, type %s", myEDUID, getEDUName(type));
-         }
-         PD_LOG(PDDEBUG, "Terminating thread for EDU: %lld, type %s", myEDUID, getEDUName(type));
+         eduMgr->waitEDU(myEDUID);
+      } else if (!isForced && event._eventType != PMD_EDU_EVENT_TERM) {
+         PD_LOG(PDERROR, "Receive the wrong event %d in EDU %lld, type %s", event._eventType, myEDUID, getEDUName(type));
+         rc = EDB_SYS;
+      } else if (isForced && event._eventType == PMD_EDU_EVENT_TERM && cb->isForced()) {
+         PD_LOG(PDEVENT, "EDU %lld, type %s is forced", myEDUID, type);
+         isForced = true;
       }
+         // felease the event data
+      if (!isForced && event._Data && event._relase) {
+         free(event._Data);
+         event.reset();
+      }
+
+      rc = eduMgr->returnEDU(myEDUID, isForced, &eduDestroyed);
+      if (rc) {
+            PD_LOG(PDERROR, "Invalid EDU Status for EDU: %lld, type %s", myEDUID, getEDUName(type));
+      }
+      PD_LOG(PDDEBUG, "Terminating thread for EDU: %lld, type %s", myEDUID, getEDUName(type));
    }
    return 0;
 }

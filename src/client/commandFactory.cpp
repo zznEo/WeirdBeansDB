@@ -22,7 +22,7 @@ ICommand *CommandFactory::getCommandProcesser(const char *pCmd) {
     do {
         COMMAND_MAP::iterator iter;
         iter = _cmdMap.find(pCmd);
-        printf("cmd processor is:%s\n", pCmd);
+        //printf("cmd processor is:%s\n", pCmd);
         if(iter != _cmdMap.end()) {
             pProcessor = iter->second;
         }
