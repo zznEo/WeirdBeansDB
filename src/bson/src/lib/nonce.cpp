@@ -14,12 +14,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#ifdef _WINDOWS
+#define _CRT_RAND_S	
+#endif
 
 #include "nonce.h"
+
+#ifdef _WINDOWS
+#include <cstdlib>	// rand_s
+#endif
+
 #include <boost/static_assert.hpp>
 #include <boost/thread/mutex.hpp>
 #include <fstream>
-
 namespace Nonce {
 
     BOOST_STATIC_ASSERT( sizeof(nonce) == 8 );

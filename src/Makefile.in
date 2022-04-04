@@ -124,7 +124,8 @@ am_emeralddb_OBJECTS = emeralddb-pmdMain.$(OBJEXT) \
 	emeralddb-nonce.$(OBJEXT) emeralddb-ossSocket.$(OBJEXT) \
 	emeralddb-ossPrimitiveFileOp.$(OBJEXT) \
 	emeralddb-ossMmapFile.$(OBJEXT) emeralddb-pd.$(OBJEXT) \
-	emeralddb-msg.$(OBJEXT) emeralddb-dms.$(OBJEXT)
+	emeralddb-msg.$(OBJEXT) emeralddb-dms.$(OBJEXT) \
+	emeralddb-rtn.$(OBJEXT)
 emeralddb_OBJECTS = $(am_emeralddb_OBJECTS)
 emeralddb_DEPENDENCIES =
 emeralddb_LINK = $(CXXLD) $(emeralddb_CXXFLAGS) $(CXXFLAGS) \
@@ -164,7 +165,8 @@ am__depfiles_remade = ./$(DEPDIR)/edb-base64.Po \
 	./$(DEPDIR)/emeralddb-pmdEDUMgr.Po \
 	./$(DEPDIR)/emeralddb-pmdMain.Po \
 	./$(DEPDIR)/emeralddb-pmdOptions.Po \
-	./$(DEPDIR)/emeralddb-pmdTcpListener.Po
+	./$(DEPDIR)/emeralddb-pmdTcpListener.Po \
+	./$(DEPDIR)/emeralddb-rtn.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -337,7 +339,7 @@ emeralddb_SOURCES = \
     bson/src/bsonobj.cpp bson/src/util/json.cpp bson/src/oid.cpp \
     bson/src/lib/base64.cpp bson/src/lib/md5.cpp bson/src/lib/nonce.cpp \
     oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp  oss/ossMmapFile.cpp\
-    pd/pd.cpp msg/msg.cpp dms/dms.cpp
+    pd/pd.cpp msg/msg.cpp dms/dms.cpp rtn/rtn.cpp
 
 edb_SOURCES = \
     client/edb.cpp client/command.cpp client/commandFactory.cpp \
@@ -494,6 +496,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emeralddb-pmdMain.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emeralddb-pmdOptions.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emeralddb-pmdTcpListener.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emeralddb-rtn.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -963,6 +966,20 @@ emeralddb-dms.obj: dms/dms.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-dms.obj `if test -f 'dms/dms.cpp'; then $(CYGPATH_W) 'dms/dms.cpp'; else $(CYGPATH_W) '$(srcdir)/dms/dms.cpp'; fi`
 
+emeralddb-rtn.o: rtn/rtn.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-rtn.o -MD -MP -MF $(DEPDIR)/emeralddb-rtn.Tpo -c -o emeralddb-rtn.o `test -f 'rtn/rtn.cpp' || echo '$(srcdir)/'`rtn/rtn.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-rtn.Tpo $(DEPDIR)/emeralddb-rtn.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='rtn/rtn.cpp' object='emeralddb-rtn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-rtn.o `test -f 'rtn/rtn.cpp' || echo '$(srcdir)/'`rtn/rtn.cpp
+
+emeralddb-rtn.obj: rtn/rtn.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-rtn.obj -MD -MP -MF $(DEPDIR)/emeralddb-rtn.Tpo -c -o emeralddb-rtn.obj `if test -f 'rtn/rtn.cpp'; then $(CYGPATH_W) 'rtn/rtn.cpp'; else $(CYGPATH_W) '$(srcdir)/rtn/rtn.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-rtn.Tpo $(DEPDIR)/emeralddb-rtn.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='rtn/rtn.cpp' object='emeralddb-rtn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-rtn.obj `if test -f 'rtn/rtn.cpp'; then $(CYGPATH_W) 'rtn/rtn.cpp'; else $(CYGPATH_W) '$(srcdir)/rtn/rtn.cpp'; fi`
+
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
 tags: tags-am
@@ -1263,6 +1280,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/emeralddb-pmdMain.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdOptions.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdTcpListener.Po
+	-rm -f ./$(DEPDIR)/emeralddb-rtn.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -1342,6 +1360,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/emeralddb-pmdMain.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdOptions.Po
 	-rm -f ./$(DEPDIR)/emeralddb-pmdTcpListener.Po
+	-rm -f ./$(DEPDIR)/emeralddb-rtn.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

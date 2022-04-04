@@ -16,6 +16,7 @@
 
 #include "core.hpp"
 #include "pmdEDUMgr.hpp"
+#include "rtn.hpp"
 
 enum EDB_DB_STATUS {
    EDB_DB_NORMAL = 0,
@@ -36,8 +37,9 @@ private:
     char _logFilePath[OSS_MAX_PATHSIZE + 1];
     int _maxPool;
     char _svcName[NI_MAXSERV + 1];
-    EDB_DB_STATUS _dbStatus;
-    pmdEDUMgr _eduMgr;
+    EDB_DB_STATUS   _dbStatus;
+    pmdEDUMgr       _eduMgr;
+    rtn             _rtnMgr;
 public:
     // constructor
     EDB_KRCB() {
@@ -51,38 +53,36 @@ public:
     ~EDB_KRCB() {}
 
     // get edu mgr
-    pmdEDUMgr *getEDUMgr () {
-      return &_eduMgr ;
-    }
+    pmdEDUMgr *getEDUMgr () { return &_eduMgr; }
+
+    // get ryn mgr
+    rtn *getRtnMgr() { return &_rtnMgr; }
 
      // get database status
     inline EDB_DB_STATUS getDBStatus() {
         return _dbStatus;
     }
+
     // get data file path
-    inline const char *getDataFilePath() {
-        return _dataFilePath;
-    }
+    inline const char *getDataFilePath() { return _dataFilePath; }
+
     // get log file path
-    inline const char *getLogFilePath() {
-        return _logFilePath;
-    }
+    inline const char *getLogFilePath() { return _logFilePath; }
+
     // get service name
-    inline const char *getSvcName() {
-        return _svcName;
-    }
+    inline const char *getSvcName() { return _svcName; }
+
     // get max thread pool
-    inline int getMaxPool() {
-        return _maxPool;
-    }
+    inline int getMaxPool() { return _maxPool; }
+
     // setup database status
-    inline void setDBStatus(EDB_DB_STATUS status) {
-        _dbStatus = status;
-    }
+    inline void setDBStatus(EDB_DB_STATUS status) { _dbStatus = status; }
+
     // set data file path
     void setDataFilePath(const char *pPath) {
         strncpy(_dataFilePath, pPath, sizeof(_dataFilePath));
     }
+
     // set log file path
     void setLogFilePath(const char *pPath) {
         strncpy(_logFilePath, pPath, sizeof(_logFilePath));
@@ -91,10 +91,12 @@ public:
     void setSvcName ( const char *pName) {
         strncpy(_svcName, pName, sizeof(_svcName));
     }
+
     // set max pool
     void setMaxPool(int maxPool) {
         _maxPool = maxPool;
     }
+
     // setup from pmdOptions
     int init(pmdOptions *options);
 };

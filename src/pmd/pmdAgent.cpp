@@ -18,6 +18,7 @@
 #include "../bson/src/bson.h"
 #include "pmd.hpp"
 #include "msg.hpp"
+#include "rtn.hpp"
 using namespace bson;
 using namespace std;
 
@@ -40,7 +41,7 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
     int opCode = header->opCode;
     EDB_KRCB *krcb = pmdGetKRCB();
     // get rtn
-    //rtn *rtnMgr = krcb->getRtnMgr();
+    rtn *rtnMgr = krcb->getRtnMgr();
     *disconnect = false;
 
     // check if the package length is valid
@@ -63,19 +64,19 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
             try {
                 BSONObj insertor(pInsertorBuffer);
                 PD_LOG(PDEVENT, "Insert: insertor: %s", insertor.toString().c_str());
-                // // make sure _id is included
-                // BSONObjIterator it(insertor);
-                // BSONElement ele = *it;
-                // const char *tmp = ele.fieldName();
-                // rc = strcmp(tmp, gKeyFieldName);
-                // if (rc) {
-                //     PD_LOG (PDERROR, "First element in inserted record is not _id");
-                //     probe = 25;
-                //     rc = EDB_NO_ID;
-                //     goto error;
-                // }
-                // // insert record
-                // rc = rtnMgr->rtnInsert(insertor);
+                // make sure _id is included
+                BSONObjIterator it(insertor);
+                BSONElement ele = *it;
+                const char *tmp = ele.fieldName();
+                rc = strcmp(tmp, gKeyFieldName);
+                if (rc) {
+                    PD_LOG (PDERROR, "First element in inserted record is not _id");
+                    probe = 25;
+                    rc = EDB_NO_ID;
+                    goto error;
+                }
+                // insert record
+                rc = rtnMgr->rtnInsert(insertor);
             } catch (std::exception &e) {
                 PD_LOG(PDERROR, "Failed to create insertor for insert: %s", e.what());
                 probe = 30;
@@ -96,7 +97,7 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
                 BSONObjBuilder b;
                 b.append ("query", "test");
                 b.append ("result", 10);
-                retObj = b.obj ();
+                retObj = b.obj();
             } catch (std::exception &e) {
                 PD_LOG (PDERROR, "Failed to create return BSONObj: %s", e.what() );
                 probe = 55;
@@ -106,7 +107,7 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
             //rc = rtnMgr->rtnFind (recordID, retObj);
         } else if (opCode == OP_DELETE) {
             PD_LOG (PDDEBUG, "Delete request received" );
-            rc = msgExtractDelete (pReceiveBuffer, recordID);
+            rc = msgExtractDelete(pReceiveBuffer, recordID);
             if (rc) {
                 PD_LOG ( PDERROR, "Failed to read delete packet" );
                 probe = 50;
@@ -114,7 +115,7 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
                 goto error;
             }
             PD_LOG (PDEVENT, "Delete condition: %s", recordID.toString().c_str() );
-            //rc = rtnMgr->rtnRemove ( recordID );
+            rc = rtnMgr->rtnRemove(recordID);
         } else if (opCode == OP_SNAPSHOT) {
             PD_LOG (PDDEBUG, "Snapshot request received");
             try {
