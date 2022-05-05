@@ -123,9 +123,10 @@ am_emeralddb_OBJECTS = emeralddb-pmdMain.$(OBJEXT) \
 	emeralddb-base64.$(OBJEXT) emeralddb-md5.$(OBJEXT) \
 	emeralddb-nonce.$(OBJEXT) emeralddb-ossSocket.$(OBJEXT) \
 	emeralddb-ossPrimitiveFileOp.$(OBJEXT) \
-	emeralddb-ossMmapFile.$(OBJEXT) emeralddb-pd.$(OBJEXT) \
+	emeralddb-ossMmapFile.$(OBJEXT) emeralddb-ossHash.$(OBJEXT) \
+	emeralddb-monCB.$(OBJEXT) emeralddb-pd.$(OBJEXT) \
 	emeralddb-msg.$(OBJEXT) emeralddb-dms.$(OBJEXT) \
-	emeralddb-rtn.$(OBJEXT)
+	emeralddb-rtn.$(OBJEXT) emeralddb-ixmBucket.$(OBJEXT)
 emeralddb_OBJECTS = $(am_emeralddb_OBJECTS)
 emeralddb_DEPENDENCIES =
 emeralddb_LINK = $(CXXLD) $(emeralddb_CXXFLAGS) $(CXXFLAGS) \
@@ -154,9 +155,11 @@ am__depfiles_remade = ./$(DEPDIR)/edb-base64.Po \
 	./$(DEPDIR)/edb-ossSocket.Po ./$(DEPDIR)/edb-pd.Po \
 	./$(DEPDIR)/emeralddb-base64.Po \
 	./$(DEPDIR)/emeralddb-bsonobj.Po ./$(DEPDIR)/emeralddb-dms.Po \
+	./$(DEPDIR)/emeralddb-ixmBucket.Po \
 	./$(DEPDIR)/emeralddb-json.Po ./$(DEPDIR)/emeralddb-md5.Po \
-	./$(DEPDIR)/emeralddb-msg.Po ./$(DEPDIR)/emeralddb-nonce.Po \
-	./$(DEPDIR)/emeralddb-oid.Po \
+	./$(DEPDIR)/emeralddb-monCB.Po ./$(DEPDIR)/emeralddb-msg.Po \
+	./$(DEPDIR)/emeralddb-nonce.Po ./$(DEPDIR)/emeralddb-oid.Po \
+	./$(DEPDIR)/emeralddb-ossHash.Po \
 	./$(DEPDIR)/emeralddb-ossMmapFile.Po \
 	./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po \
 	./$(DEPDIR)/emeralddb-ossSocket.Po ./$(DEPDIR)/emeralddb-pd.Po \
@@ -233,12 +236,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/lz_mysql/emeralddb/src/missing aclocal-1.16
+ACLOCAL = ${SHELL} /home/lz_mysql/weirdbeansdb/src/missing aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/lz_mysql/emeralddb/src/missing autoconf
-AUTOHEADER = ${SHELL} /home/lz_mysql/emeralddb/src/missing autoheader
-AUTOMAKE = ${SHELL} /home/lz_mysql/emeralddb/src/missing automake-1.16
+AUTOCONF = ${SHELL} /home/lz_mysql/weirdbeansdb/src/missing autoconf
+AUTOHEADER = ${SHELL} /home/lz_mysql/weirdbeansdb/src/missing autoheader
+AUTOMAKE = ${SHELL} /home/lz_mysql/weirdbeansdb/src/missing automake-1.16
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -266,7 +269,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/lz_mysql/emeralddb/src/missing makeinfo
+MAKEINFO = ${SHELL} /home/lz_mysql/weirdbeansdb/src/missing makeinfo
 MKDIR_P = /usr/bin/mkdir -p
 OBJEXT = o
 PACKAGE = emeralddb
@@ -281,10 +284,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 1.0
-abs_builddir = /home/lz_mysql/emeralddb/src
-abs_srcdir = /home/lz_mysql/emeralddb/src
-abs_top_builddir = /home/lz_mysql/emeralddb/src
-abs_top_srcdir = /home/lz_mysql/emeralddb/src
+abs_builddir = /home/lz_mysql/weirdbeansdb/src
+abs_srcdir = /home/lz_mysql/weirdbeansdb/src
+abs_top_builddir = /home/lz_mysql/weirdbeansdb/src
+abs_top_srcdir = /home/lz_mysql/weirdbeansdb/src
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -312,7 +315,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/lz_mysql/emeralddb/src/install-sh
+install_sh = ${SHELL} /home/lz_mysql/weirdbeansdb/src/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -338,8 +341,9 @@ emeralddb_SOURCES = \
     pmd/pmd.cpp pmd/pmdEDU.cpp pmd/pmdEDUMgr.cpp pmd/pmdAgent.cpp \
     bson/src/bsonobj.cpp bson/src/util/json.cpp bson/src/oid.cpp \
     bson/src/lib/base64.cpp bson/src/lib/md5.cpp bson/src/lib/nonce.cpp \
-    oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp  oss/ossMmapFile.cpp\
-    pd/pd.cpp msg/msg.cpp dms/dms.cpp rtn/rtn.cpp
+    oss/ossSocket.cpp oss/ossPrimitiveFileOp.cpp  oss/ossMmapFile.cpp \
+    oss/ossHash.cpp mon/monCB.cpp \
+    pd/pd.cpp msg/msg.cpp dms/dms.cpp rtn/rtn.cpp ixm/ixmBucket.cpp
 
 edb_SOURCES = \
     client/edb.cpp client/command.cpp client/commandFactory.cpp \
@@ -480,11 +484,14 @@ include ./$(DEPDIR)/edb-pd.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-base64.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-bsonobj.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-dms.Po # am--include-marker
+include ./$(DEPDIR)/emeralddb-ixmBucket.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-json.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-md5.Po # am--include-marker
+include ./$(DEPDIR)/emeralddb-monCB.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-msg.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-nonce.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-oid.Po # am--include-marker
+include ./$(DEPDIR)/emeralddb-ossHash.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-ossMmapFile.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po # am--include-marker
 include ./$(DEPDIR)/emeralddb-ossSocket.Po # am--include-marker
@@ -924,6 +931,34 @@ emeralddb-ossMmapFile.obj: oss/ossMmapFile.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ossMmapFile.obj `if test -f 'oss/ossMmapFile.cpp'; then $(CYGPATH_W) 'oss/ossMmapFile.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossMmapFile.cpp'; fi`
 
+emeralddb-ossHash.o: oss/ossHash.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-ossHash.o -MD -MP -MF $(DEPDIR)/emeralddb-ossHash.Tpo -c -o emeralddb-ossHash.o `test -f 'oss/ossHash.cpp' || echo '$(srcdir)/'`oss/ossHash.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-ossHash.Tpo $(DEPDIR)/emeralddb-ossHash.Po
+#	$(AM_V_CXX)source='oss/ossHash.cpp' object='emeralddb-ossHash.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ossHash.o `test -f 'oss/ossHash.cpp' || echo '$(srcdir)/'`oss/ossHash.cpp
+
+emeralddb-ossHash.obj: oss/ossHash.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-ossHash.obj -MD -MP -MF $(DEPDIR)/emeralddb-ossHash.Tpo -c -o emeralddb-ossHash.obj `if test -f 'oss/ossHash.cpp'; then $(CYGPATH_W) 'oss/ossHash.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossHash.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-ossHash.Tpo $(DEPDIR)/emeralddb-ossHash.Po
+#	$(AM_V_CXX)source='oss/ossHash.cpp' object='emeralddb-ossHash.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ossHash.obj `if test -f 'oss/ossHash.cpp'; then $(CYGPATH_W) 'oss/ossHash.cpp'; else $(CYGPATH_W) '$(srcdir)/oss/ossHash.cpp'; fi`
+
+emeralddb-monCB.o: mon/monCB.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-monCB.o -MD -MP -MF $(DEPDIR)/emeralddb-monCB.Tpo -c -o emeralddb-monCB.o `test -f 'mon/monCB.cpp' || echo '$(srcdir)/'`mon/monCB.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-monCB.Tpo $(DEPDIR)/emeralddb-monCB.Po
+#	$(AM_V_CXX)source='mon/monCB.cpp' object='emeralddb-monCB.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-monCB.o `test -f 'mon/monCB.cpp' || echo '$(srcdir)/'`mon/monCB.cpp
+
+emeralddb-monCB.obj: mon/monCB.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-monCB.obj -MD -MP -MF $(DEPDIR)/emeralddb-monCB.Tpo -c -o emeralddb-monCB.obj `if test -f 'mon/monCB.cpp'; then $(CYGPATH_W) 'mon/monCB.cpp'; else $(CYGPATH_W) '$(srcdir)/mon/monCB.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-monCB.Tpo $(DEPDIR)/emeralddb-monCB.Po
+#	$(AM_V_CXX)source='mon/monCB.cpp' object='emeralddb-monCB.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-monCB.obj `if test -f 'mon/monCB.cpp'; then $(CYGPATH_W) 'mon/monCB.cpp'; else $(CYGPATH_W) '$(srcdir)/mon/monCB.cpp'; fi`
+
 emeralddb-pd.o: pd/pd.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-pd.o -MD -MP -MF $(DEPDIR)/emeralddb-pd.Tpo -c -o emeralddb-pd.o `test -f 'pd/pd.cpp' || echo '$(srcdir)/'`pd/pd.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-pd.Tpo $(DEPDIR)/emeralddb-pd.Po
@@ -979,6 +1014,20 @@ emeralddb-rtn.obj: rtn/rtn.cpp
 #	$(AM_V_CXX)source='rtn/rtn.cpp' object='emeralddb-rtn.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-rtn.obj `if test -f 'rtn/rtn.cpp'; then $(CYGPATH_W) 'rtn/rtn.cpp'; else $(CYGPATH_W) '$(srcdir)/rtn/rtn.cpp'; fi`
+
+emeralddb-ixmBucket.o: ixm/ixmBucket.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-ixmBucket.o -MD -MP -MF $(DEPDIR)/emeralddb-ixmBucket.Tpo -c -o emeralddb-ixmBucket.o `test -f 'ixm/ixmBucket.cpp' || echo '$(srcdir)/'`ixm/ixmBucket.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-ixmBucket.Tpo $(DEPDIR)/emeralddb-ixmBucket.Po
+#	$(AM_V_CXX)source='ixm/ixmBucket.cpp' object='emeralddb-ixmBucket.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ixmBucket.o `test -f 'ixm/ixmBucket.cpp' || echo '$(srcdir)/'`ixm/ixmBucket.cpp
+
+emeralddb-ixmBucket.obj: ixm/ixmBucket.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -MT emeralddb-ixmBucket.obj -MD -MP -MF $(DEPDIR)/emeralddb-ixmBucket.Tpo -c -o emeralddb-ixmBucket.obj `if test -f 'ixm/ixmBucket.cpp'; then $(CYGPATH_W) 'ixm/ixmBucket.cpp'; else $(CYGPATH_W) '$(srcdir)/ixm/ixmBucket.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/emeralddb-ixmBucket.Tpo $(DEPDIR)/emeralddb-ixmBucket.Po
+#	$(AM_V_CXX)source='ixm/ixmBucket.cpp' object='emeralddb-ixmBucket.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(emeralddb_CXXFLAGS) $(CXXFLAGS) -c -o emeralddb-ixmBucket.obj `if test -f 'ixm/ixmBucket.cpp'; then $(CYGPATH_W) 'ixm/ixmBucket.cpp'; else $(CYGPATH_W) '$(srcdir)/ixm/ixmBucket.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1264,11 +1313,14 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/emeralddb-base64.Po
 	-rm -f ./$(DEPDIR)/emeralddb-bsonobj.Po
 	-rm -f ./$(DEPDIR)/emeralddb-dms.Po
+	-rm -f ./$(DEPDIR)/emeralddb-ixmBucket.Po
 	-rm -f ./$(DEPDIR)/emeralddb-json.Po
 	-rm -f ./$(DEPDIR)/emeralddb-md5.Po
+	-rm -f ./$(DEPDIR)/emeralddb-monCB.Po
 	-rm -f ./$(DEPDIR)/emeralddb-msg.Po
 	-rm -f ./$(DEPDIR)/emeralddb-nonce.Po
 	-rm -f ./$(DEPDIR)/emeralddb-oid.Po
+	-rm -f ./$(DEPDIR)/emeralddb-ossHash.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossMmapFile.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossSocket.Po
@@ -1344,11 +1396,14 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/emeralddb-base64.Po
 	-rm -f ./$(DEPDIR)/emeralddb-bsonobj.Po
 	-rm -f ./$(DEPDIR)/emeralddb-dms.Po
+	-rm -f ./$(DEPDIR)/emeralddb-ixmBucket.Po
 	-rm -f ./$(DEPDIR)/emeralddb-json.Po
 	-rm -f ./$(DEPDIR)/emeralddb-md5.Po
+	-rm -f ./$(DEPDIR)/emeralddb-monCB.Po
 	-rm -f ./$(DEPDIR)/emeralddb-msg.Po
 	-rm -f ./$(DEPDIR)/emeralddb-nonce.Po
 	-rm -f ./$(DEPDIR)/emeralddb-oid.Po
+	-rm -f ./$(DEPDIR)/emeralddb-ossHash.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossMmapFile.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossPrimitiveFileOp.Po
 	-rm -f ./$(DEPDIR)/emeralddb-ossSocket.Po

@@ -1,0 +1,10 @@
+query {_id:2}
+query {_id:1}
+insert {_id:"helloworld"}
+query {_id:"helloworld"}
+
+insert {_id:"1",name:"luozhuang"}
+query {_id:"1"}
+
+delete {_id:"helloworld"}
+connect 127.0.0.1 48127

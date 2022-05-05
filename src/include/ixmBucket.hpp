@@ -1,6 +1,4 @@
 /*******************************************************************************
-   Copyright (C) 2013 SequoiaDB Software Inc.
-
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License, version 3,
    as published by the Free Software Foundation.
@@ -31,9 +29,9 @@ struct ixmEleHash {
 
 class ixmBucketManager {
 private:
-    class ixmBucjet {
+    class ixmBucket {
     private:
-        std::multimap<using int, ixmEleHash> _bucketMap;
+        std::multimap<unsigned int, ixmEleHash> _bucketMap;
         ossSLatch _mutex;
     public:
         // get the record whether exist
@@ -43,7 +41,7 @@ private:
         int removeIndex(unsigned int hashNum, ixmEleHash &eleHash);
     };
     // process data
-    int _processData(BSONObj &record, dmsRecordID &recordID, ixmEleHash &eleHash, unsigned int &random);
+    int _processData(BSONObj &record, dmsRecordID &recordID, unsigned int &hashNum, ixmEleHash &eleHash, unsigned int &random);
 private:
     std::vector<ixmBucket *>_bucket;
 public:

@@ -18,6 +18,7 @@
 #include "ossMmapFile.hpp"
 #include "bson.h"
 #include "dmsRecord.hpp"
+#include "ixmBucket.hpp"
 #include <vector>
 
 #define DMS_EXTEND_SIZE 65536
@@ -100,9 +101,9 @@ private:
     ossSLatch                           _mutex;
     ossXLatch                           _extendMutex;
     char                                *_pFileName;
-    //ixmBucketManager                    *_ixmBucketMgr;
+    ixmBucketManager                    *_ixmBucketMgr;
 public:
-    dmsFile();
+    dmsFile(ixmBucketManager *ixmBucketMgr);
     ~dmsFile();
     // initialize the dms file
     int initialize (const char *pFileName);

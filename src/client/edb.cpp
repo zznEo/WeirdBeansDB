@@ -25,8 +25,8 @@ const char    NEW_LINE          =   '\n';
 int gQuit = 0;
 
 void Edb::start(void) {
-    std::cout << "Welcome to EmeraldDB Shell!" << std::endl;
-    std::cout << "edb help for help, Ctrl+c or quit to exit" << std::endl;
+    std::cout << "Welcome to WeirdBeansDB Shell!" << std::endl;
+    std::cout << "wdb help for help, Ctrl+c or quit to exit" << std::endl;
     while(gQuit == 0) {
         prompt();
     }
@@ -34,7 +34,7 @@ void Edb::start(void) {
 
 void Edb::prompt(void) {
     int ret = EDB_OK;
-    ret = readInput("edb", 0);
+    ret = readInput("wdb", 0);
     if (ret) {
         //printf("nothing to do\n");
         return ;
@@ -63,7 +63,7 @@ void Edb::prompt(void) {
     }
     pCmd = _cmdFactory.getCommandProcesser(cmd.c_str());
     if(pCmd != NULL) {
-        pCmd -> execute(_sock, optionVec);
+        pCmd->execute(_sock, optionVec);
     }
 }
 
@@ -73,7 +73,7 @@ int Edb::readInput(const char *pPrompt, int numIndent) {
     for(int i = 0;i < numIndent;i++) {
         std::cout << TAB;
     }
-    // print "edb> "
+    // print "wdb> "
     std::cout << pPrompt << "> ";
     // read a line from cmd
     readLine(_cmdBuffer, CMD_BUFFER_SIZE - 1);

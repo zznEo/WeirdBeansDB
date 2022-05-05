@@ -17,6 +17,8 @@
 #include "core.hpp"
 #include "pmdEDUMgr.hpp"
 #include "rtn.hpp"
+#include "monCB.hpp"
+
 
 enum EDB_DB_STATUS {
    EDB_DB_NORMAL = 0,
@@ -40,6 +42,7 @@ private:
     EDB_DB_STATUS   _dbStatus;
     pmdEDUMgr       _eduMgr;
     rtn             _rtnMgr;
+    MonAppCB	  _monAppCB;
 public:
     // constructor
     EDB_KRCB() {
@@ -99,6 +102,8 @@ public:
 
     // setup from pmdOptions
     int init(pmdOptions *options);
+    // get mon 
+    inline MonAppCB& getMonAppCB(){	return _monAppCB;	}
 };
 extern EDB_KRCB pmd_krcb;
 

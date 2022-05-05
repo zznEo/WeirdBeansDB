@@ -230,8 +230,7 @@ int QueryCommand::handleReply() {
     return ret;
 }
 
-int QueryCommand::execute(ossSocket & sock, std::vector<std::string> & argVec)
-{
+int QueryCommand::execute(ossSocket & sock, std::vector<std::string> & argVec) {
     int rc = EDB_OK;
     if(argVec.size() < 1) {
         return getError(EDB_QUERY_INVALID_ARGUMENT);
@@ -327,11 +326,11 @@ int QuitCommand::execute(ossSocket &sock, std::vector<std::string> &argVec) {
 int HelpCommand::execute(ossSocket &sock, std::vector<std::string> &argVec) {
    int ret = EDB_OK;
    printf("List of classes of commands:\n\n");
-   printf("%s [server] [port]-- connecting emeralddb server\n", COMMAND_CONNECT);
-   printf("%s -- sending a insert command to emeralddb server\n", COMMAND_INSERT);
-   printf("%s -- sending a query command to emeralddb server\n", COMMAND_QUERY);
-   printf("%s -- sending a delete command to emeralddb server\n", COMMAND_DELETE);
-   printf("%s [number]-- sending a test command to emeralddb server\n", COMMAND_TEST);
+   printf("%s [server] [port]-- connecting weirdbeansdb server\n", COMMAND_CONNECT);
+   printf("%s -- sending a insert command to weirdbeansdb server\n", COMMAND_INSERT);
+   printf("%s -- sending a query command to weirdbeansdb server\n", COMMAND_QUERY);
+   printf("%s -- sending a delete command to weirdbeansdb server\n", COMMAND_DELETE);
+   printf("%s [number]-- sending a test command to weirdbeansdb server\n", COMMAND_TEST);
    printf("%s -- providing current number of record inserting\n", COMMAND_SNAPSHOT);
    printf("%s -- quitting command\n\n", COMMAND_QUIT);
    printf("Type \"help\" command for help\n");

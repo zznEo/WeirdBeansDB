@@ -19,6 +19,8 @@
 #include "pmd.hpp"
 #include "msg.hpp"
 #include "rtn.hpp"
+#include "monCB.hpp"
+
 using namespace bson;
 using namespace std;
 
@@ -77,6 +79,7 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
                 }
                 // insert record
                 rc = rtnMgr->rtnInsert(insertor);
+                if(!rc)  krcb->getMonAppCB().increaseInsertTimes();
             } catch (std::exception &e) {
                 PD_LOG(PDERROR, "Failed to create insertor for insert: %s", e.what());
                 probe = 30;
@@ -85,7 +88,7 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
             }
         } else if (opCode == OP_QUERY) {
             PD_LOG (PDDEBUG, "Query request received");
-            rc = msgExtractQuery (pReceiveBuffer, recordID);
+            rc = msgExtractQuery(pReceiveBuffer, recordID);
             if (rc) {
                 PD_LOG (PDERROR, "Failed to read query packet");
                 probe = 40;
@@ -93,18 +96,8 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
                 goto error;
             }
             PD_LOG (PDEVENT, "Query condition: %s", recordID.toString().c_str());
-            try {
-                BSONObjBuilder b;
-                b.append ("query", "test");
-                b.append ("result", 10);
-                retObj = b.obj();
-            } catch (std::exception &e) {
-                PD_LOG (PDERROR, "Failed to create return BSONObj: %s", e.what() );
-                probe = 55;
-                rc = EDB_INVALIDARG;
-                goto error;
-            }
-            //rc = rtnMgr->rtnFind (recordID, retObj);
+            rc = rtnMgr->rtnFind(recordID, retObj);
+            if(!rc)  krcb->getMonAppCB().increaseQueryTimes();
         } else if (opCode == OP_DELETE) {
             PD_LOG (PDDEBUG, "Delete request received" );
             rc = msgExtractDelete(pReceiveBuffer, recordID);
@@ -116,14 +109,16 @@ static int pmdProcessAgentRequest(char *pReceiveBuffer, int packetSize, char **p
             }
             PD_LOG (PDEVENT, "Delete condition: %s", recordID.toString().c_str() );
             rc = rtnMgr->rtnRemove(recordID);
+            if(!rc)  krcb->getMonAppCB().increaseDelTimes();
         } else if (opCode == OP_SNAPSHOT) {
             PD_LOG (PDDEBUG, "Snapshot request received");
+            MonAppCB monAppCB=krcb->getMonAppCB();
             try {
                 BSONObjBuilder b;
-                b.append ("insertTimes", 100);
-                b.append ("delTimes", 1000);
-                b.append ("queryTimes", 2000);
-                b.append ("serverRunTime", 100);
+                b.append("insertTimes",monAppCB.getInsertTimes());
+                b.append("delTimes",monAppCB.getDelTimes());
+                b.append("queryTimes",monAppCB.getQueryTimes());
+                b.append("serverRunTime",monAppCB.getServerRunTime());
                 retObj = b.obj();
             } catch (std::exception &e) {
                 PD_LOG (PDERROR, "Failed to create return BSONObj: %s", e.what() );
